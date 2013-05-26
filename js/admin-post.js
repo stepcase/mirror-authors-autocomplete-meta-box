@@ -16,8 +16,8 @@ jQuery.noConflict()(function(){
 		// autocomplete new tags
 		if ( $authors_autocomplete_mb_input.size() > 0 ) {
 			$authors_autocomplete_mb_input.autocomplete({
-				delay: 100,
-				minLength: 1,
+				delay: 500,
+				minLength: 2,
 				source: function( $request, $response ){
 					jQuery.ajax({
 						url: ajaxurl,
