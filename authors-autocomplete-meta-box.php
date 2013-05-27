@@ -122,12 +122,13 @@ function ajax_authors_autocomplete_mb_autocomplete_callback() {
 			// loop through each user to make sure they are allowed
 			foreach ( $users as $user ) {			
 				if ( authors_autocomplete_mb_allow_user( $user, $post_id, $post_type ) ) {
-				
+					$caps = unserialize($user->capabilities);
 					$results[] = array(
 						'user_id'		=> $user->ID,
 						'user_login'	=> $user->user_login,
 						'display_name'	=> $user->display_name,
 						'email'			=> $user->user_email,
+						'role'			=> ucfirst(array_shift(array_keys($caps))),
 						'value'			=> $user->ID,
 						'label'			=> $user->display_name,
 						);

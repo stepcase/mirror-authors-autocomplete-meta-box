@@ -38,6 +38,7 @@ jQuery.noConflict()(function(){
 									user_login: $item.user_login,
 									display_name: $item.display_name,
 									email: $item.email,
+									role: $item.role,
 									value: $item.label,
 									label: $item.label
 								};
@@ -137,7 +138,7 @@ jQuery.noConflict()(function(){
 				}
 
 			}).data( "ui-autocomplete" )._renderItem = function( $ul, $item ) {
-				return jQuery( '<li>' ).append( '<a><strong>' + $item.display_name + '</strong><br />Username: <em>' + $item.user_login + '</em><br />E-mail: <em>' + $item.email + '</em></a>' ).appendTo( $ul );
+				return jQuery( '<li>' ).append( '<a><strong>' + $item.display_name + '</strong><br />Username: <em>' + $item.user_login + '</em><br />E-mail: <em>' + $item.email + '</em><br/>Role: <em>' + $item.role + '</em></a>' ).appendTo( $ul );
 			};
 	    }
 		
