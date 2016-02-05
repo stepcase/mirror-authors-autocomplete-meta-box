@@ -22,8 +22,11 @@ jQuery.noConflict()(function(){
 		if ( $authors_autocomplete_mb_input.size() > 0 ) {
 			
 			$authors_autocomplete_mb_input.autocomplete({
-				delay: 100,
-				minLength: 1,
+				// Start MOD
+				// Use a longer delay to lower server load
+				delay: 500,
+				minLength: 2,
+				// End MOD
 				source: function( $request, $response ){
 					jQuery.ajax({
 						url: ajaxurl,
@@ -44,6 +47,10 @@ jQuery.noConflict()(function(){
 									user_login: $item.user_login,
 									display_name: $item.display_name,
 									email: $item.email,
+									// Start MOD
+									// add role as part of the info
+									role: $item.role,
+									// End MOD
 									value: $item.label,
 									label: $item.label
 								};
@@ -160,7 +167,10 @@ jQuery.noConflict()(function(){
 				}
 
 			}).data( "ui-autocomplete" )._renderItem = function( $ul, $item ) {
-				return jQuery( '<li>' ).append( '<a><strong>' + $item.display_name + '</strong><br />Username: <em>' + $item.user_login + '</em><br />E-mail: <em>' + $item.email + '</em></a>' ).appendTo( $ul );
+				// Start MOD
+				// add role as part of the info
+				return jQuery( '<li>' ).append( '<a><strong>' + $item.display_name + '</strong><br />Username: <em>' + $item.user_login + '</em><br />E-mail: <em>' + $item.email + '</em><br/>Role: <em>' + $item.role + '</em></a>' ).appendTo( $ul );
+				// End MOD
 			};
 			
 			/**

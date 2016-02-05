@@ -152,7 +152,10 @@ function ajax_authors_autocomplete_mb_autocomplete_callback() {
 		 * OR who's user ID exists in $custom_user_search_user_ids.
 		 */
 		if ( $users = $wpdb->get_results( "SELECT users.*, usermeta.meta_value AS capabilities FROM $wpdb->users users INNER JOIN $wpdb->usermeta usermeta ON usermeta.user_id = users.ID AND usermeta.meta_key = '{$wpdb->get_blog_prefix( $blog_id )}capabilities' WHERE ( ( users.user_login LIKE '%$search_term%' OR users.display_name LIKE '%$search_term%' OR users.user_email LIKE '%$search_term%' ) OR users.ID IN $custom_user_search_user_ids ) ORDER BY users.display_name" ) ) {
-		
+			// Start MOD
+			// add role as part of the info
+			$caps = unserialize($user->capabilities);
+			// End MOD
 			// build the autocomplete results
 			$results = array();
 			
@@ -165,6 +168,10 @@ function ajax_authors_autocomplete_mb_autocomplete_callback() {
 						'user_login'	=> $user->user_login,
 						'display_name'	=> $user->display_name,
 						'email'			=> $user->user_email,
+						// Start MOD
+						// add role as part of the info
+						'role'			=> ucfirst(array_shift(array_keys($caps))),
+						// end MOD
 						'value'			=> $user->ID,
 						'label'			=> $user->display_name,
 						);
