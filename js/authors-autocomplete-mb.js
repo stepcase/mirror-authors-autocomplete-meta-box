@@ -1,12 +1,17 @@
 jQuery.noConflict()(function(){
 
 	// save the post ID and post type for AJAX calls
-	var $authors_autocomplete_mb_post_id = jQuery( '#post_ID' ).val();
-	var $authors_autocomplete_mb_post_type = jQuery( '#post_type' ).val();
+	var $authors_autocomplete_mb_post_id = 0;
+	if ( jQuery( '#post_ID' ).length > 0 )
+		$authors_autocomplete_mb_post_id = jQuery( '#post_ID' ).val();
+		
+	var $authors_autocomplete_mb_post_type = '';
+	if ( jQuery( '#post_type' ).length > 0 )
+		$authors_autocomplete_mb_post_type = jQuery( '#post_type' ).val();
 
 	// handle autocomplete for authors
-	jQuery( '#authors_autocomplete_mb_authordiv' ).each( function() {
-	
+	jQuery( 'table#authors_autocomplete_mb_autocomplete' ).each( function() {
+		
 		// this is the authors autocomplete input	
 		var $authors_autocomplete_mb_input = jQuery( 'input#authors_autocomplete_mb_post_author' );
 		
@@ -15,9 +20,10 @@ jQuery.noConflict()(function(){
 		
 		// autocomplete new tags
 		if ( $authors_autocomplete_mb_input.size() > 0 ) {
+			
 			$authors_autocomplete_mb_input.autocomplete({
-				delay: 500,
-				minLength: 2,
+				delay: 100,
+				minLength: 1,
 				source: function( $request, $response ){
 					jQuery.ajax({
 						url: ajaxurl,
@@ -38,7 +44,6 @@ jQuery.noConflict()(function(){
 									user_login: $item.user_login,
 									display_name: $item.display_name,
 									email: $item.email,
-									role: $item.role,
 									value: $item.label,
 									label: $item.label
 								};
@@ -47,7 +52,10 @@ jQuery.noConflict()(function(){
 					});
 				},
 				search: function( $event, $ui ) {
+				
+					// make sure any errors are removed
 					authors_autocomplete_mb_remove_error_message();
+					
 				},
 				select: function( $event, $ui ) {
 				
@@ -62,13 +70,25 @@ jQuery.noConflict()(function(){
 					
 				},
 				response: function( $event, $ui ) {
+				
+					// stop the loading spinner
 					authors_autocomplete_mb_stop_loading_spinner();
+					
 				},
 				focus: function( $event, $ui ) {
+					
+					// stop the loading spinner
 					authors_autocomplete_mb_stop_loading_spinner();
+				
+					// make sure any errors are removed
+					authors_autocomplete_mb_remove_error_message();
+					
 				},
 				close: function( $event, $ui ) {
+				
+					// stop the loading spinner
 					authors_autocomplete_mb_stop_loading_spinner();
+					
 				},
 				change: function( $event, $ui ) {
 					
@@ -100,7 +120,9 @@ jQuery.noConflict()(function(){
 							dataType: 'json',
 							data: {
 								action: 'authors_autocomplete_mb_if_user_exists_by_value',
-								authors_autocomplete_mb_user_value: $entered_user_value
+								authors_autocomplete_mb_user_value: $entered_user_value,
+								authors_autocomplete_mb_post_id: $authors_autocomplete_mb_post_id,
+								authors_autocomplete_mb_post_type: $authors_autocomplete_mb_post_type
 							},
 							success: function( $user ){
 								
@@ -122,11 +144,11 @@ jQuery.noConflict()(function(){
 									
 									// if the user is not allowed to be an author
 									if ( $user.notallowed )
-										authors_autocomplete_mb_add_error_message( "The user '" + $entered_user_value + "' is not allowed to be an author for this post." );
+										authors_autocomplete_mb_add_error_message( $user.notallowed );
 									
 									// if the user is not allowed
 									else if ( $user.doesnotexist )
-										authors_autocomplete_mb_add_error_message( "The user '" + $entered_user_value + "' does not exist." );
+										authors_autocomplete_mb_add_error_message( $user.doesnotexist );
 								
 								}
 												
@@ -138,8 +160,27 @@ jQuery.noConflict()(function(){
 				}
 
 			}).data( "ui-autocomplete" )._renderItem = function( $ul, $item ) {
-				return jQuery( '<li>' ).append( '<a><strong>' + $item.display_name + '</strong><br />Username: <em>' + $item.user_login + '</em><br />E-mail: <em>' + $item.email + '</em><br/>Role: <em>' + $item.role + '</em></a>' ).appendTo( $ul );
+				return jQuery( '<li>' ).append( '<a><strong>' + $item.display_name + '</strong><br />Username: <em>' + $item.user_login + '</em><br />E-mail: <em>' + $item.email + '</em></a>' ).appendTo( $ul );
 			};
+			
+			/**
+			 * When focus is returned to input,
+			 * make sure the loading spinner stops and
+			 * any error messages are removed.
+			 *
+			 * For some reason the autocomplete 'focus'
+			 * event doesn't work 100% of the time.
+			 */
+			$authors_autocomplete_mb_input.on( 'focus', function( $event, $ui ) {
+				
+				// stop the loading spinner
+				authors_autocomplete_mb_stop_loading_spinner();
+				
+				// make sure any errors are removed
+				authors_autocomplete_mb_remove_error_message();
+					
+			});
+			
 	    }
 		
 	});
@@ -206,6 +247,5 @@ function authors_autocomplete_mb_change_post_author( $post_author_id, $post_auth
 		});
 		
 	}
-
 
 }
